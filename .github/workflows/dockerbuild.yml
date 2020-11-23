@@ -1,0 +1,40 @@
+name: Docker Build
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Import Action Configuration
+        run: |
+          cat ACTION_ENV >> ${GITHUB_ENV}
+          echo "DOCKER_COMMIT=${GITHUB_SHA::8}" >> ${GITHUB_ENV}
+          echo "DOCKER_TAG=${GITHUB_REF//refs\/tags\/}" >> ${GITHUB_ENV}
+      - name: Build Docker Image
+        run: |
+          DOCKER_BUILD="docker build"
+          for each in $(cat ACTION_ENV | grep -v ^DOCKER); do
+            DOCKER_BUILD="$DOCKER_BUILD --build-arg $each"
+          done
+          DOCKER_BUILD="$DOCKER_BUILD -t ${DOCKER_REPO}:${DOCKER_COMMIT} ."
+          echo ${DOCKER_BUILD} > /tmp/DOCKER_BUILD.sh
+          /bin/bash /tmp/DOCKER_BUILD.sh
+      - name: Test Docker Image
+        run: |
+          DOCKER_TEST="docker run -t"
+          [ -n "$DOCKER_TEST_ENTRYPOINT" ] && DOCKER_TEST="$DOCKER_TEST --entrypoint=$DOCKER_TEST_ENTRYPOINT"
+          DOCKER_TEST="$DOCKER_TEST $DOCKER_REPO:$DOCKER_COMMIT"
+          [ -n "$DOCKER_TEST_CMD" ] && DOCKER_TEST="$DOCKER_TEST $DOCKER_TEST_CMD"
+          echo ${DOCKER_TEST} > /tmp/DOCKER_TEST.sh
+          /bin/bash /tmp/DOCKER_TEST.sh
+      - name: Publish Docker Image
+        run: |
+          docker tag ${DOCKER_REPO}:${DOCKER_COMMIT} ${DOCKER_REPO}:${DOCKER_TAG}
+          docker tag ${DOCKER_REPO}:${DOCKER_COMMIT} ${DOCKER_REPO}:latest
+          docker login -u=${{ secrets.DOCKER_USERNAME }} -p=${{ secrets.DOCKER_PASSWORD }}
+          docker push ${DOCKER_REPO}:${DOCKER_TAG}
+          docker push ${DOCKER_REPO}:latest
