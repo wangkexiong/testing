@@ -1,0 +1,3 @@
+DOCKER_REPO=wangkexiong/testing
+DOCKER_TEST_ENTRYPOINT=
+DOCKER_TEST_CMD=ls -al /output
