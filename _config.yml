@@ -106,4 +106,10 @@ theme: next
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  type: ''
+  type: git
+  repo:
+    url: https://github.com/wangkexiong/wangkexiong.github.io.git
+    branch: master
+    token: $HEXO_GITHUB_TOKEN
+  name: wangkexiong
+  email: $HEXO_GITHUB_EMAIL
