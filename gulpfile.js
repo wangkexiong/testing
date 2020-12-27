@@ -131,11 +131,20 @@ gulp.task("compressHtml", () => {
     };
 
     return gulp
-        .src("./public/**/*.{html,xml}")
+        .src("./public/**/*.html")
         .pipe(gulpif(isDebug, debug({title: "Compress HTML:"})))
         .pipe(plumber())
         .pipe(htmlmin(minOption))
         .pipe(htmlclean(cleanOptions))
+        .pipe(gulp.dest("./public"));
+});
+
+gulp.task("compressXml", () => {
+    return gulp
+        .src("./public/**/*.xml")
+        .pipe(gulpif(isDebug, debug({title: "Compress XML:"})))
+        .pipe(plumber())
+        .pipe(htmlmin({collapseWhitespace: true}))
         .pipe(gulp.dest("./public"));
 });
 
@@ -162,6 +171,7 @@ gulp.task(
         "clean",
         "generate",
         "compressHtml",
+        "compressXml",
         "compressCss",
         "compressJs",
         "compressImage",
@@ -174,6 +184,6 @@ gulp.task(
     gulp.series(
         "clean",
         "generate",
-        gulp.parallel("compressHtml", "compressCss", "compressImage", "compressJs")
+        gulp.parallel("compressHtml", "compressXml", "compressCss", "compressImage", "compressJs")
     )
 );
