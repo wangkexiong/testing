@@ -1,0 +1,17 @@
+.DS_Store
+Thumbs.db
+db.json
+*.log
+node_modules/
+public/
+.deploy*/
+yarn.lock
+package-lock.json
+
+.github
+.github_env
+.gitignore
+README.md
+scaffolds
+source/README.md
+source/_posts

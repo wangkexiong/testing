@@ -1,0 +1,3 @@
+DOCKER_REPO=wangkexiong/testing
+DOCKER_TEST_ENTRYPOINT=/bin/bash
+DOCKER_TEST_CMD=-c "source /root/.nvm/nvm.sh && npx gulp"
