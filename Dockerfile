@@ -17,13 +17,18 @@ RUN mkdir -p /opt/jetbrain && cd /opt/jetbrain && \
 
 COPY entrypoint.sh /opt
 
+RUN chmod +x /opt/entrypoint.sh
+
+
 FROM ubuntu:focal
 LABEL maintainer=wangkexiong
 
 RUN apt-get update && \
-    apt-get install -y x11-utils rsync && \
+    apt-get install -y x11-utils inotify-tools rsync && \
     apt-get autoremove -y && apt-get clean all -y && \
     rm -rf /var/lib/apt/lists/* /var/log/apt/*
 
 COPY --from=BASE /move /root
 COPY --from=BASE /opt /opt
+
+ENTRYPOINT [ "/opt/entrypoint.sh" ]
